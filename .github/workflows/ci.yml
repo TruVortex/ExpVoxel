@@ -1,0 +1,91 @@
+name: ExpVoxel CI
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: expvoxel_runner_linux
+            binary_path: build/expvoxel_runner
+          - os: windows-latest
+            artifact_name: expvoxel_runner_windows.exe
+            binary_path: build/expvoxel_runner.exe
+          - os: macos-latest
+            artifact_name: expvoxel_runner_macos
+            binary_path: build/expvoxel_runner
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Install Dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ninja-build libsdl2-dev g++-12
+    - name: Install Dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install sdl2 ninja
+    - name: Install Dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        vcpkg install sdl2:x64-windows
+    - name: Configure CMake (Linux / macOS)
+      if: matrix.os != 'windows-latest'
+      run: cmake -B build -G Ninja
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      run: cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+    - name: Build Engine & Tests
+      run: cmake --build build
+    - name: Run Test Suite
+      run: ctest --test-dir build --output-on-failure
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: ${{ matrix.binary_path }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Download Linux Binary
+      uses: actions/download-artifact@v4
+      with:
+        name: expvoxel_runner_linux
+    - name: Download Windows Binary
+      uses: actions/download-artifact@v4
+      with:
+        name: expvoxel_runner_windows.exe
+    - name: Download macOS Binary
+      uses: actions/download-artifact@v4
+      with:
+        name: expvoxel_runner_macos
+    - name: Create Release and Upload Binaries
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          expvoxel_runner_linux
+          expvoxel_runner_windows.exe
+          expvoxel_runner_macos
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
