@@ -3,7 +3,7 @@ name: ExpVoxel CI
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build-and-test:
@@ -50,11 +50,14 @@ jobs:
       run: cmake --build build
     - name: Run Test Suite
       run: ctest --test-dir build --output-on-failure
+    - name: Prepare Binary Asset
+      shell: bash
+      run: cp ${{ matrix.binary_path }} ${{ matrix.artifact_name }}
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.artifact_name }}
-        path: ${{ matrix.binary_path }}
+        path: ${{ matrix.artifact_name }}
 
   create-release:
     name: Create GitHub Release
@@ -63,19 +66,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
-    - name: Download Linux Binary
+    - name: Download All Release Assets
       uses: actions/download-artifact@v4
       with:
-        name: expvoxel_linux
-    - name: Download Windows Binary
-      uses: actions/download-artifact@v4
-      with:
-        name: expvoxel_windows.exe
-    - name: Download macOS Binary
-      uses: actions/download-artifact@v4
-      with:
-        name: expvoxel_macos
+        pattern: expvoxel_*
+        merge-multiple: true
     - name: Create Release and Upload Binaries
       uses: softprops/action-gh-release@v2
       with:
