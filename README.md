@@ -1,16 +1,25 @@
 # ExpVoxel
 
-ExpVoxel is a low-latency CPU voxel raytracing project written in modern C++20. It combines **Data-Oriented Design**, **AVX2 SIMD Ray-Packet Traversal**, a **Lock-Free Chase-Lev Work-Stealing Scheduler**, and **Epoch-Based Reclamation** for concurrent world mutations.
+ExpVoxel is a low-latency CPU voxel raytracing project that explores modern systems programming techniques for high-performance rendering. Rather than focusing solely on rendering images, the project investigates how cache-aware data structures, SIMD vectorization, lock-free scheduling, and custom memory management interact to build a scalable multicore renderer.
+
+In particular, ExpVoxel was motivated as an *exp*loration of:
+
+* Cache-aware data structures
+* SIMD programming
+* Lock-free work stealing
+* Thread-local memory allocation
+* Epoch-based memory reclamation
+* Multicore task scheduling
 
 ---
 
 ## Architectural Highlights
 
-ExpVoxel leverages a data-oriented memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks (`alignas(64)`). Custom thread-local linear arena allocators eliminate heap allocations along the hot rendering path, while bitwise shifts replace division and modulo operations to minimize CPU cycle overhead. Traversal uses a Two-Level DDA algorithm that evaluates empty $8\times8\times8$ bricks in a single operation, bypassing unpopulated spatial regions instantly.
+ExpVoxel leverages a data-oriented memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks. Thread-local linear arena allocators eliminate heap allocations along the rendering path, while traversal uses a Two-Level DDA algorithm that evaluates empty bricks in a single operation, bypassing unpopulated spatial regions instantly.
 
-To maximize instruction-level parallelism, rays are first evaluated against the world's axis-aligned bounding box (AABB) using a fast slab intersection test, rejecting out-of-bounds rays in zero DDA steps. Traversal executes via AVX2 SIMD intrinsics (`__m256`) processing 8 rays simultaneously in a Structure of Arrays (SoA) layout. Work distribution across CPU cores is managed by a custom single-producer multi-consumer Chase-Lev work-stealing scheduler built with fine-grained C++20 atomic memory orderings (`memory_order_acquire`, `release`, `seq_cst`) for zero-allocation tile dispatch.
+To maximize instruction-level parallelism, rays are first evaluated against the world's axis-aligned bounding box (AABB) using a fast slab intersection test, rejecting out-of-bounds rays in zero DDA steps. Traversal executes via AVX2 intrinsics processing rays simultaneously by employing an SoA layout. Work distribution across CPU cores is managed by a lock-free single-producer multiple-consumer work-stealing scheduler (Chase-Lev) built with C++20 atomic orderings for zero-allocation tile dispatch.
 
-Dynamic scene modifications operate asynchronously via lock-free atomic voxel occupancy masks (`std::atomic<uint64_t>`). Background simulation threads mutate the world state while render threads trace rays without mutex locks or thread stalls. Memory safety during concurrent deletions is guaranteed via Epoch-Based Reclamation.
+Dynamic scene modifications operate asynchronously via lock-free atomic voxel occupancy masks; background simulation threads mutate the world state while render threads trace rays without mutex locks or thread stalls. Moreover, memory safety during concurrent deletions is guaranteed via Epoch-Based Reclamation.
 
 ---
 
@@ -55,7 +64,7 @@ ctest --test-dir build --output-on-failure
 ```bash
 ./build/expvoxel_runner
 ```
-Launches the real-time application rendering a $64\times64\times64$ voxel landscape demo:
+Launches the interactive application, rendering a $64\times64\times64$ voxel landscape demo:
 
 * **`W`**: Move camera position forward along the Z-axis (towards the terrain).
 * **`S`**: Move camera position backward along the Z-axis (away from the terrain).
