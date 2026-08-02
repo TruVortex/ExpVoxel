@@ -1,4 +1,5 @@
 #include "rendering/simd_dda.hpp"
+#include "rendering/dda.hpp"
 
 #if defined(__AVX2__) || (defined(_MSC_VER) && defined(__AVX2__))
 #include <immintrin.h>
@@ -84,17 +85,17 @@ std::array<HitResult, 8> trace_dda_simd_packet(const RayPacket8 &packet,
         constexpr int MAX_STEPS = 128;
         int steps = 0;
         while (steps < MAX_STEPS && grid.in_bounds(map_x, map_y, map_z)) {
-            int bx = map_x >> 3;
-            int by = map_y >> 3;
-            int bz = map_z >> 3;
+            int bx = map_x / 8;
+            int by = map_y / 8;
+            int bz = map_z / 8;
             const Brick *brick = grid.get_brick_ptr(bx, by, bz);
             if (!brick) {
-                int nx = (step_x > 0) ? (((bx + 1) << 3) - map_x)
-                                      : (map_x - ((bx << 3) - 1));
-                int ny = (step_y > 0) ? (((by + 1) << 3) - map_y)
-                                      : (map_y - ((by << 3) - 1));
-                int nz = (step_z > 0) ? (((bz + 1) << 3) - map_z)
-                                      : (map_z - ((bz << 3) - 1));
+                int nx = (step_x > 0) ? (((bx + 1) * 8) - map_x)
+                                      : (map_x - ((bx * 8) - 1));
+                int ny = (step_y > 0) ? (((by + 1) * 8) - map_y)
+                                      : (map_y - ((by * 8) - 1));
+                int nz = (step_z > 0) ? (((bz + 1) * 8) - map_z)
+                                      : (map_z - ((bz * 8) - 1));
                 float t_exit_x = t_max_x + (nx - 1) * t_delta_x;
                 float t_exit_y = t_max_y + (ny - 1) * t_delta_y;
                 float t_exit_z = t_max_z + (nz - 1) * t_delta_z;
