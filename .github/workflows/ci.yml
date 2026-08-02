@@ -17,14 +17,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: expvoxel_runner_linux
-            binary_path: build/expvoxel_runner
+            artifact_name: expvoxel_linux
+            binary_path: build/expvoxel
           - os: windows-latest
-            artifact_name: expvoxel_runner_windows.exe
-            binary_path: build/expvoxel_runner.exe
+            artifact_name: expvoxel_windows.exe
+            binary_path: build/expvoxel.exe
           - os: macos-latest
-            artifact_name: expvoxel_runner_macos
-            binary_path: build/expvoxel_runner
+            artifact_name: expvoxel_macos
+            binary_path: build/expvoxel
 
     steps:
     - name: Checkout Code
@@ -69,22 +69,22 @@ jobs:
     - name: Download Linux Binary
       uses: actions/download-artifact@v4
       with:
-        name: expvoxel_runner_linux
+        name: expvoxel_linux
     - name: Download Windows Binary
       uses: actions/download-artifact@v4
       with:
-        name: expvoxel_runner_windows.exe
+        name: expvoxel_windows.exe
     - name: Download macOS Binary
       uses: actions/download-artifact@v4
       with:
-        name: expvoxel_runner_macos
+        name: expvoxel_macos
     - name: Create Release and Upload Binaries
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          expvoxel_runner_linux
-          expvoxel_runner_windows.exe
-          expvoxel_runner_macos
+          expvoxel_linux
+          expvoxel_windows.exe
+          expvoxel_macos
         draft: false
         prerelease: false
       env:

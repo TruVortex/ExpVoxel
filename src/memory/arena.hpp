@@ -3,11 +3,15 @@
 #include <cstdint>
 #include <cstdlib>
 
+#if defined(_WIN32)
+#include <malloc.h>
+#endif
+
 class Arena {
   public:
     explicit Arena(size_t capacity_bytes)
         : m_capacity(capacity_bytes), m_offset(0) {
-#if defined(_MSC_VER)
+#if defined(_WIN32)
         m_buffer = static_cast<uint8_t *>(_aligned_malloc(capacity_bytes, 64));
 #else
         m_buffer =
@@ -16,7 +20,7 @@ class Arena {
     }
 
     ~Arena() {
-#if defined(_MSC_VER)
+#if defined(_WIN32)
         _aligned_free(m_buffer);
 #else
         std::free(m_buffer);

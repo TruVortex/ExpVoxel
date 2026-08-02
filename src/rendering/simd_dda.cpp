@@ -1,8 +1,14 @@
 #include "rendering/simd_dda.hpp"
+
+#if defined(__AVX2__) || (defined(_MSC_VER) && defined(__AVX2__))
+#include <immintrin.h>
+#endif
+
 #include <algorithm>
 #include <cmath>
-#include <immintrin.h>
 #include <limits>
+
+#if defined(__AVX2__) || (defined(_MSC_VER) && defined(__AVX2__))
 
 inline bool intersect_aabb(float ox, float oy, float oz, float dx, float dy,
                            float dz, float max_x, float max_y, float max_z,
@@ -129,7 +135,7 @@ std::array<HitResult, 8> trace_dda_simd_packet(const RayPacket8 &packet,
                 results[i].voxel_y = map_y;
                 results[i].voxel_z = map_z;
                 grid.get_colour(map_x, map_y, map_z, results[i].colour_r,
-                               results[i].colour_g, results[i].colour_b);
+                                results[i].colour_g, results[i].colour_b);
                 break;
             }
             if (t_max_x < t_max_y) {
@@ -154,3 +160,17 @@ std::array<HitResult, 8> trace_dda_simd_packet(const RayPacket8 &packet,
     }
     return results;
 }
+#else
+std::array<HitResult, 8> trace_dda_simd_packet(const RayPacket8 &packet,
+                                               const Grid &grid) {
+    std::array<HitResult, 8> results{};
+    for (int i = 0; i < 8; ++i) {
+        if (packet.active_mask & (1 << i)) {
+            Ray r{{packet.orig_x[i], packet.orig_y[i], packet.orig_z[i]},
+                  {packet.dir_x[i], packet.dir_y[i], packet.dir_z[i]}};
+            results[i] = trace_dda_scalar(r, grid);
+        }
+    }
+    return results;
+}
+#endif
