@@ -23,7 +23,7 @@ Finally, dynamic scene modifications operate asynchronously via lock-free atomic
 
 ---
 
-## Benchmarks
+## Performance
 
 Benchmarked at 720p resolution on a `Ryzen 5 9600X`:
 
