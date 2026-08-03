@@ -55,7 +55,7 @@ ninja -C build
 ctest --test-dir build --output-on-failure
 ```
 
-### Run Benchmark Suite
+### Run Benchmarks
 ```bash
 ./build/bench_engine
 ```
