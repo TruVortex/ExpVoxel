@@ -1,6 +1,6 @@
 # ExpVoxel
 
-ExpVoxel is a low-latency CPU voxel raytracing project that explores modern systems programming techniques for high-performance rendering. Rather than focusing solely on rendering images, the project investigates how cache-aware data structures, SIMD vectorization, lock-free scheduling, and custom memory management interact to build a scalable multicore renderer.
+ExpVoxel is a low-latency CPU voxel raytracing project that explores modern systems programming techniques for high-performance rendering. Rather than focusing solely on rendering images, the project investigates how these techniques interact among themselves to create a scalable, performant application.
 
 In particular, ExpVoxel was motivated as an *exp*loration of:
 
