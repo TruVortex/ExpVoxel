@@ -25,7 +25,7 @@ Finally, dynamic scene modifications operate asynchronously via lock-free atomic
 
 ## Performance & Thread Scaling
 
-Benchmarked at 720p resolution ($1280 \times 720$):
+Benchmarked at 720p resolution on a `Ryzen 5 9600X`:
 
 | Threads | Avg Frame Time | Throughput | Speedup vs 1T |
 | :---: | :---: | :---: | :---: |
@@ -37,7 +37,7 @@ Benchmarked at 720p resolution ($1280 \times 720$):
 
 ---
 
-## Build & Test Instructions
+## Usage
 
 ### Prerequisites
 * C++20 Compliant Compiler (GCC 12+, Clang 15+, MSVC 2022)
