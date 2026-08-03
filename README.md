@@ -13,7 +13,7 @@ In particular, ExpVoxel was motivated as an *exp*loration of:
 
 ---
 
-## Architectural Highlights
+## Implementation Features
 
 ExpVoxel uses a memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks. Thread-local linear arena allocators eliminate heap allocations along the rendering path, while traversal uses a Two-Level DDA algorithm that evaluates empty bricks in a single operation, bypassing unpopulated spatial regions instantly.
 
@@ -23,7 +23,7 @@ Finally, dynamic scene modifications operate asynchronously via lock-free atomic
 
 ---
 
-## Performance & Thread Scaling
+## Benchmarks
 
 Benchmarked at 720p resolution on a `Ryzen 5 9600X`:
 
