@@ -15,11 +15,11 @@ In particular, ExpVoxel was motivated as an *exp*loration of:
 
 ## Architectural Highlights
 
-ExpVoxel leverages a data-oriented memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks. Thread-local linear arena allocators eliminate heap allocations along the rendering path, while traversal uses a Two-Level DDA algorithm that evaluates empty bricks in a single operation, bypassing unpopulated spatial regions instantly.
+ExpVoxel uses a memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks. Thread-local linear arena allocators eliminate heap allocations along the rendering path, while traversal uses a Two-Level DDA algorithm that evaluates empty bricks in a single operation, bypassing unpopulated spatial regions instantly.
 
-To maximize instruction-level parallelism, rays are first evaluated against the world's axis-aligned bounding box (AABB) using a fast slab intersection test, rejecting out-of-bounds rays in zero DDA steps. Traversal executes via AVX2 intrinsics processing rays simultaneously by employing an SoA layout. Work distribution across CPU cores is managed by a lock-free single-producer multiple-consumer work-stealing scheduler (Chase-Lev) built with C++20 atomic orderings for zero-allocation tile dispatch.
+To maximize instruction-level parallelism, rays are first evaluated against the world's axis-aligned bounding box using a fast slab intersection test, rejecting out-of-bounds rays in zero DDA steps. Traversal then executes via AVX2 intrinsics; ExpVoxel processes rays simultaneously by leveraging an SoA layout. Work distribution across CPU cores is managed by a lock-free single-producer multiple-consumer work-stealing scheduler (Chase-Lev) built with C++20 atomic orderings for zero-allocation tile dispatch.
 
-Dynamic scene modifications operate asynchronously via lock-free atomic voxel occupancy masks; background simulation threads mutate the world state while render threads trace rays without mutex locks or thread stalls. Moreover, memory safety during concurrent deletions is guaranteed via Epoch-Based Reclamation.
+Finally, dynamic scene modifications operate asynchronously via lock-free atomic occupancy masks; background simulation threads mutate the world state while render threads trace rays without mutex locks or thread stalls. In particular, memory safety during concurrent deletions is guaranteed via Epoch-Based Reclamation.
 
 ---
 
