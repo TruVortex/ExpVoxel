@@ -64,12 +64,12 @@ ctest --test-dir build --output-on-failure
 ```bash
 ./build/expvoxel_runner
 ```
-Launches the interactive demo, rendering a $64\times64\times64$ voxel space:
+Launches the interactive demo, rendering a $64\times64\times64$ voxel space.
 
-* **`W`**: Move camera position forward along the Z-axis (towards the terrain).
-* **`S`**: Move camera position backward along the Z-axis (away from the terrain).
-* **`A`**: Move camera position left along the X-axis.
-* **`D`**: Move camera position right along the X-axis.
-* **`SPACE`**: Toggle automatic orbiting camera mode on or off.
-* **`R`**: Regenerate the landscape and floating spheres.
-* **`ESC`**: Close and exit the application.
+`W`: Move camera position forward along the Z-axis (towards the terrain)\
+`S`: Move camera position backward along the Z-axis (away from the terrain)\
+`A`: Move camera position left along the X-axis\
+`D`: Move camera position right along the X-axis\
+`SPACE`: Toggle automatic orbiting camera mode on or off\
+`R`: Regenerate landscape and floating spheres\
+`ESC`: Exit the demo
