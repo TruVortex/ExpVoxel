@@ -11,6 +11,7 @@ In particular, ExpVoxel was motivated as an *exp*loration of:
 * Epoch-based memory reclamation
 * Multicore task scheduling
 
+
 ---
 
 ## Implementation
@@ -64,7 +65,9 @@ ctest --test-dir build --output-on-failure
 ```bash
 ./build/expvoxel_runner
 ```
-Launches the interactive demo, rendering a $64\times64\times64$ voxel space.
+Launches the interactive demo, rendering a $64\times64\times64$ voxel space:
+
+[Demo.webm](https://github.com/user-attachments/assets/9690ca36-e122-4b6f-9e43-79c3157ef964)
 
 `W`: Move camera position forward along the Z-axis (towards the terrain)\
 `S`: Move camera position backward along the Z-axis (away from the terrain)\
