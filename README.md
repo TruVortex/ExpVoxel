@@ -13,7 +13,7 @@ In particular, ExpVoxel was motivated as an *exp*loration of:
 
 ---
 
-## Implementation Features
+## Implementation
 
 ExpVoxel uses a memory layout where the 3D grid is decomposed into $8\times8\times8$ cache-line aligned bricks. Thread-local linear arena allocators eliminate heap allocations along the rendering path, while traversal uses a Two-Level DDA algorithm that evaluates empty bricks in a single operation, bypassing unpopulated spatial regions instantly.
 
@@ -64,12 +64,12 @@ ctest --test-dir build --output-on-failure
 ```bash
 ./build/expvoxel_runner
 ```
-Launches the interactive application, rendering a $64\times64\times64$ voxel landscape demo:
+Launches the interactive demo, rendering a $64\times64\times64$ voxel space:
 
 * **`W`**: Move camera position forward along the Z-axis (towards the terrain).
 * **`S`**: Move camera position backward along the Z-axis (away from the terrain).
 * **`A`**: Move camera position left along the X-axis.
 * **`D`**: Move camera position right along the X-axis.
 * **`SPACE`**: Toggle automatic orbiting camera mode on or off.
-* **`R`**: Regenerate the procedural terrain landscape and floating spheres.
+* **`R`**: Regenerate the landscape and floating spheres.
 * **`ESC`**: Close and exit the application.
