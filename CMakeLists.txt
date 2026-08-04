@@ -72,5 +72,5 @@ add_executable(fuzz_tests tests/fuzz_tests.cpp)
 target_link_libraries(fuzz_tests PRIVATE core)
 add_test(NAME FuzzTests COMMAND fuzz_tests)
 
-add_executable(bench_engine benchmarks/bench_engine.cpp)
-target_link_libraries(bench_engine PRIVATE core)
+add_executable(bench benchmarks/bench.cpp)
+target_link_libraries(bench PRIVATE core)
